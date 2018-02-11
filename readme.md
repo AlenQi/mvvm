@@ -1,6 +1,4 @@
 ## 剖析Vue实现原理 - 如何实现双向绑定mvvm
-> 将[mvvm](https://github.com/DMQ/mvvm)项目改造成基于webpack的实现
-
 
 ## 使用 webpack打包
 ```bash

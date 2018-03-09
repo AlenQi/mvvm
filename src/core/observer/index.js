@@ -9,7 +9,7 @@ import {
 function Observer(value) {
   this.value = value;
 
-  // value 对象观察类, 
+  // value 对象观察类,
   this.dep = new Dep();
 
   this.vmCount = 0; // number of vms that has this object as root $data
@@ -39,7 +39,7 @@ export function defineReactive(obj, key, val) {
 
   // 非对象属性观察类
   const dep = new Dep();
-  
+
   const property = Object.getOwnPropertyDescriptor(obj, key);
 
   if (property && property.configurable === false) {
@@ -69,6 +69,7 @@ export function defineReactive(obj, key, val) {
       return val;
     },
     set: function reactiveSetter(newVal) {
+      // val ---> newVal
       const value = getter ? getter.call(obj) : val;
       if (newVal === value || (newVal !== newVal && value !== value)) {
         return;
@@ -81,7 +82,7 @@ export function defineReactive(obj, key, val) {
 
       // 如果为对象，则创建新的 __ob__ 对象
       childOb = observe(newVal);
-      dep.notify();
+      dep.notify(); // 通知所有订阅者
     }
   });
 }

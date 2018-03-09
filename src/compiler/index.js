@@ -59,14 +59,14 @@ Compile.prototype = {
       // 文本插值表达式 {{}}
       var reg = /\{\{(.*?)\}\}/;
 
-      if (this.isElementNode(node)) {
+      if (this.isElementNode(node)) { // 按元素节点方式编译
         this.compile(node);
 
       } else if (this.isTextNode(node) && reg.test(text)) {
         this.compileText(node, RegExp.$1);
       }
 
-      if (node.childNodes && node.childNodes.length) {
+      if (node.childNodes && node.childNodes.length) { // 遍历编译子节点
         this.compileElement(node);
       }
     });
@@ -76,10 +76,12 @@ Compile.prototype = {
     var nodeAttrs = node.attributes;
 
     [].slice.call(nodeAttrs).forEach((attr) => {
-      var attrName = attr.name;
+      // 规定：指令以 v-xxx 命名
+      // 如 <span v-text="content"></span> 中指令为 v-text
+      var attrName = attr.name; // v-text
       if (this.isDirective(attrName)) {
-        var exp = attr.value;
-        var dir = attrName.substring(2);
+        var exp = attr.value;  // content
+        var dir = attrName.substring(2); // text
         // 事件指令
         if (this.isEventDirective(dir)) {
           compileUtil.eventHandler(node, this.$vm, exp, dir);
@@ -147,13 +149,15 @@ var compileUtil = {
   bind: function (node, vm, exp, dir) {
     // 策略模式
     var updaterFn = updater[dir + 'Updater'];
-
+    // 第一次初始化视图
     // 直接运行获取结果
     updaterFn && updaterFn(node, this._getVMVal(vm, exp));
 
     // 新增订阅者
+    // 实例化订阅者，此操作会在对应的属性消息订阅器中添加了该订阅者watcher
     // watcher数据变化后执行更新视图指令
     new Watcher(vm, exp, function (value, oldValue) {
+      // 一旦属性值有变化，会收到通知执行此更新函数，更新视图
       updaterFn && updaterFn(node, value, oldValue);
     });
   },

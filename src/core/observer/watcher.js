@@ -4,12 +4,12 @@ import {
 } from '../util/index'
 
 /**
- * 
+ *
  * 观察员
- * @param {any} vm 
- * @param {any} expOrFn 
- * @param {any} cb 
- * @param {any} options 
+ * @param {any} vm
+ * @param {any} expOrFn
+ * @param {any} cb
+ * @param {any} options
  */
 function Watcher(vm, expOrFn, cb, options = {}) {
   this.cb = cb;
@@ -21,13 +21,13 @@ function Watcher(vm, expOrFn, cb, options = {}) {
   vm._watchers.push(this);
   this.lazy = !!options.lazy;
   this.dirty = this.lazy;
-  
+
   if (typeof expOrFn === 'function') {
     this.getter = expOrFn;
   } else {
     this.getter = this.parseGetter(expOrFn);
   }
-
+  // 此处为了触发属性的getter，从而在dep添加自己，结合Observer更易理解
   // 观察员 value
   this.value = this.lazy
   ? undefined
@@ -42,20 +42,22 @@ Watcher.prototype = {
       this.dirty = true;
     } else {
       // 数据对象直接更新
+      // 属性值变化收到通知
       this.run();
     }
   },
   // 非计算属性获取value
   run: function () {
-    var value = this.get();
+    var value = this.get(); // 取到最新值
     var oldVal = this.value;
     if (value !== oldVal) {
       this.value = value;
       // 更新视图的指令
+      // 执行Compile中绑定的回调，更新视图
       this.cb.call(this.vm, value, oldVal);
     }
   },
-  
+
   /**
    * watcher 观察员 加入到某个被观察数据集合中
    * @param {Dep} dep
@@ -88,7 +90,7 @@ Watcher.prototype = {
    * Evaluate the getter, and re-collect dependencies.
    */
   get: function () {
-    // 设置当前的 Watcher 
+    // 设置当前的 Watcher
     pushTarget(this);
     const vm = this.vm;
 

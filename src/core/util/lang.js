@@ -13,8 +13,8 @@ export function isReserved (str) {
 export function def (obj, key, val, enumerable) {
   Object.defineProperty(obj, key, {
     value: val,
-    enumerable: !!enumerable,
+    enumerable: !!enumerable, // 可枚举
     writable: true,
-    configurable: true
+    configurable: true // 不能再define
   })
 }
